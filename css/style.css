@@ -1,0 +1,35 @@
+body{
+    background: #f6f6f6;
+    position: relative;
+    padding-bottom: 5em;
+}
+
+footer {
+    background: white;
+    bottom: 0;
+    position: fixed;
+    text-align: center;
+    font-size: 0.8em;
+    color: #868686;
+    margin: auto;
+    width: 100%;
+    padding: 10px;
+}
+
+.controls {
+    margin-top: 2em;
+}
+
+.codeEditor{
+    margin-top: 2em;
+}
+
+.codeEditor textarea{
+    width: 100%;
+    min-height: 400px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    border: solid 1px #e7e7e7;
+    padding: 1em;
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>IDE #G4 - CEMBM</title>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/all.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container mt-5">
+            <h1>
+                CEMBM
+            </h1>
+            <div>
+                Bienvenido al analizador dedicado al lenguaje de programación CEMBM
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="controls text-center">
+            <label for="file-upload" class="btn btn-primary  m-1">
+                <i class="fas fa-folder-open me-1"></i>Abrir Archivo
+            </label>
+            <button class="btn btn-success m-1"><i class="fas fa-eye me-1"></i>Análisis Léxico</button>
+            <button class="btn btn-info m-1"><i class="fas fa-brain me-1"></i>Análisis Sintáctico</button>
+            <input id="file-upload" type="file" class="d-none"/>
+        </div>
+        <div class="codeEditor">
+            <h5>Escribe o pega el código a ser analizado, también puedes importarlo a través de un archivo</h5>
+            <textarea id="resourceCode"></textarea>
+        </div>
+        <div class="codeEditor">
+            <h5>Resultado</h5>
+            <textarea id="analisisCode"></textarea>
+        </div>
+    </div>
+    <footer>
+        Grupo No.4, UMG, Compiladores 2023
+    </footer>
+</body>
+</html>
