@@ -28,13 +28,11 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: function(response) {
-                console.log(response);
-
-                showAlert('Prueba de alerta');
-
+                $("#resourceCode").html(response);
+                showAlert('Archivo cargado');
             },
             error: function () {
-
+                showAlert('Error al cargar archivo, por favor intente de nuevo');
             }
         });
     });
