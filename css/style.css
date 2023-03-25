@@ -33,3 +33,42 @@ footer {
     border: solid 1px #e7e7e7;
     padding: 1em;
 }
+
+.editor {
+    display: inline-flex;
+    gap: 10px;
+    font-family: monospace;
+    line-height: 21px;
+    background: #e6e6ef;
+    border-radius: 2px;
+    padding: 20px 10px;
+    width: 100%;
+}
+
+.editor .line-numbers {
+    width: 20px;
+    text-align: right;
+}
+
+.editor .line-numbers span {
+    counter-increment:  linenumber;
+}
+
+.editor .line-numbers span::before {
+    content: counter(linenumber);
+    display: block;
+    color: #506882;
+}
+
+.editor textarea {
+    line-height: 21px;
+    overflow-y: hidden;
+    padding: 0;
+    border: 0;
+    background: #e6e6ef;
+    color: #282a3a;
+    outline: none;
+    resize: none;
+    width: 100%;
+    min-height: 300px;
+}

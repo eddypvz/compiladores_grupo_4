@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/all.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" type="text/css" href="css/toastify.min.css">
     <script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script type="text/javascript" src="js/toastify-js.js"></script>
     <script type="text/javascript" src="js/script.js"></script>
 </head>
 <body>
@@ -33,13 +33,26 @@
             <button class="btn btn-info m-1"><i class="fas fa-brain me-1"></i>Análisis Sintáctico</button>
             <input id="file-upload" type="file" class="d-none"/>
         </div>
-        <div class="codeEditor">
-            <h5>Escribe o pega el código a ser analizado, también puedes importarlo a través de un archivo</h5>
-            <textarea id="resourceCode"></textarea>
-        </div>
-        <div class="codeEditor">
-            <h5>Resultado</h5>
-            <textarea id="analisisCode"></textarea>
+
+        <div class="row">
+            <div class="col-12 col-sm-6">
+                <h5 class="mt-5 mb-3">Escribe o pega el código a ser analizado, también puedes importarlo a través de un archivo</h5>
+                <div id="editorOne" class="editor">
+                    <div class="line-numbers">
+                        <span></span>
+                    </div>
+                    <textarea id="resourceCode"></textarea>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6">
+                <h5 class="mt-5 mb-3">Resultado <br> &nbsp;</h5>
+                <div id="editorTwo" class="editor">
+                    <div class="line-numbers">
+                        <span></span>
+                    </div>
+                    <textarea id="analisisCode"></textarea>
+                </div>
+            </div>
         </div>
     </div>
     <footer>

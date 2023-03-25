@@ -35,3 +35,18 @@ if (!empty($_GET['operation']) && $_GET['operation'] === 'fileUpload') {
     die();
 }
 
+if (!empty($_GET['operation']) && $_GET['operation'] === 'loadDemo') {
+
+    $location = "tmp/CEMBM.cembm";
+    $handle = fopen($location, "r");
+
+    // leo su contenido y cierro el archivo
+    $contents = fread($handle, filesize($location));
+    fclose($handle);
+
+    // imprimo el contenido del archivo con cabeceras de texto plano
+    header("Content-Type: text/plain");
+    print $contents;
+
+    die();
+}
