@@ -1,0 +1,6 @@
+#curso = 'Compiladores';
+#year = '2023';
+
+funcion imprimirYear() {
+	imprimir "{#curso} {#year}";
+}

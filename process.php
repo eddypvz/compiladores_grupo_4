@@ -37,7 +37,7 @@ if (!empty($_GET['operation']) && $_GET['operation'] === 'fileUpload') {
 
 if (!empty($_GET['operation']) && $_GET['operation'] === 'loadDemo') {
 
-    $location = "tmp/CEMBM.cembm";
+    $location = "CEMBM.cembm";
     $handle = fopen($location, "r");
 
     // leo su contenido y cierro el archivo
