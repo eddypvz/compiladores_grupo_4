@@ -9,7 +9,7 @@ clase {
         #i = 0;
 
         *CM* Ciclo mientras (While en lenguajes populares)
-        CicloMientrasQue (#i < 10) {
+        cicloMientrasQue (#i < 10) {
 
             *CM* Imprimimos la variable #i
             mostrar #i;
