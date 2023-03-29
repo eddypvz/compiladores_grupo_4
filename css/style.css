@@ -72,3 +72,25 @@ footer {
     width: 100%;
     min-height: 300px;
 }
+
+#analisisCode {
+    width: 100%;
+    min-height: 400px;
+    background: #e6e6ef;
+    padding: 1em;
+}
+
+#analisisCode .linea {
+
+}
+
+#analisisCode .linea .contenido{
+    display: inline-block;
+}
+
+#analisisCode .linea .contador{
+    display: inline-block;
+    width: 40px;
+    text-align: left;
+    color: #506882;
+}

@@ -1,4 +1,6 @@
 <?php
+// incluyo el archivo de análisis
+include_once ('analisis.php');
 
 // Para subir archivos
 if (!empty($_GET['operation']) && $_GET['operation'] === 'fileUpload') {
@@ -48,5 +50,25 @@ if (!empty($_GET['operation']) && $_GET['operation'] === 'loadDemo') {
     header("Content-Type: text/plain");
     print $contents;
 
+    die();
+}
+
+if (!empty($_GET['operation']) && $_GET['operation'] === 'analisisLexico') {
+
+    $codigo = $_POST['codigo'] ?? '';
+
+    // Corro el análisis sintactico
+    header("Content-Type: text/html");
+    analisisLexico($codigo);
+    die();
+}
+
+if (!empty($_GET['operation']) && $_GET['operation'] === 'analisisSintactico') {
+
+    $codigo = $_POST['codigo'] ?? '';
+
+    // Corro el análisis sintactico
+    header("Content-Type: text/html");
+    analisisSintactico($codigo);
     die();
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>IDE #G4 - CEMBM</title>
+    <title>IDE #G4</title>
     <meta charset="UTF-8">
     <meta name="robots" content="noindex" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,10 +17,10 @@
     <header>
         <div class="container mt-5">
             <h1>
-                CEMBM
+                Grupo 4
             </h1>
             <div>
-                Bienvenido al analizador dedicado al lenguaje de programación CEMBM
+                Bienvenido al analizador realizado por el grupo No.4 para el análisis de código, curso Compiladores.
             </div>
         </div>
     </header>
@@ -29,8 +29,8 @@
             <label for="file-upload" class="btn btn-primary  m-1">
                 <i class="fas fa-folder-open me-1"></i>Abrir Archivo
             </label>
-            <button class="btn btn-success m-1"><i class="fas fa-eye me-1"></i>Análisis Léxico</button>
-            <button class="btn btn-info m-1"><i class="fas fa-brain me-1"></i>Análisis Sintáctico</button>
+            <button id="analisisLexicoBtn" class="btn btn-success m-1"><i class="fas fa-eye me-1"></i>Análisis Léxico</button>
+            <button id="analisisSintacticoBtn" class="btn btn-info m-1"><i class="fas fa-brain me-1"></i>Análisis Sintáctico</button>
             <input id="file-upload" type="file" class="d-none"/>
         </div>
 
@@ -46,12 +46,7 @@
             </div>
             <div class="col-12 col-sm-6">
                 <h5 class="mt-5 mb-3">Resultado <br> &nbsp;</h5>
-                <div id="editorTwo" class="editor">
-                    <div class="line-numbers">
-                        <span></span>
-                    </div>
-                    <textarea id="analisisCode"></textarea>
-                </div>
+                <div id="analisisCode"></div>
             </div>
         </div>
     </div>

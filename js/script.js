@@ -1,4 +1,5 @@
 
+// Acá carga el documento (cuando la página carga)
 $(document).ready(function () {
 
     function showAlert(msg) {
@@ -8,11 +9,53 @@ $(document).ready(function () {
             newWindow: true,
             close: true,
             gravity: "top", // `top` or `bottom`
-            position: "center", // `left`, `center` or `right`
+            position: "right", // `left`, `center` or `right`
             stopOnFocus: true, // Prevents dismissing of toast on hover
             onClick: function(){} // Callback after click
         }).showToast();
     }
+
+    // Botones
+    $("#analisisLexicoBtn").click(function () {
+
+        const codigo = $("#resourceCode").val();
+        console.log(codigo);
+
+        $.ajax({
+            url: 'process.php?operation=analisisLexico',
+            method: 'post',
+            data: {
+                codigo: codigo
+            },
+            success: function(response) {
+                $("#analisisCode").html(response); // disparo el trigger para cambio
+                showAlert('Análisis léxico realizado');
+            },
+            error: function () {
+                showAlert('Error al realizar análisis, por favor intente de nuevo');
+            }
+        });
+    });
+
+    $("#analisisSintacticoBtn").click(function () {
+
+        const codigo = $("#resourceCode").val();
+
+        $.ajax({
+            url: 'process.php?operation=analisisSintactico',
+            method: 'post',
+            data: {
+                codigo: codigo
+            },
+            success: function(response) {
+                $("#analisisCode").html(response); // disparo el trigger para cambio
+                showAlert('Análisis sintáctico realizado');
+            },
+            error: function () {
+                showAlert('Error al realizar análisis, por favor intente de nuevo');
+            }
+        });
+    });
 
     // Cuando seleccione un archivo a subir
     $("#file-upload").on("change", function (e) {
@@ -21,6 +64,9 @@ $(document).ready(function () {
         const files = $(this)[0].files[0];
         fd.append('file', files);
 
+        const resourceCode = $("#resourceCode");
+        resourceCode.val(''); // borro el contenido del html para reemplazarlo por el contenido que trae
+
         $.ajax({
             url: 'process.php?operation=fileUpload', // envío el parámetro operation para identificar la operación fileUpload
             type: 'post',
@@ -28,7 +74,7 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: function(response) {
-                $("#resourceCode").html(response).trigger('change'); // disparo el trigger para cambio
+                resourceCode.val(response).trigger('change'); // disparo el trigger para cambio
                 showAlert('Archivo cargado');
             },
             error: function () {
@@ -71,17 +117,14 @@ $(document).ready(function () {
 
     // Habilito las lineas para ambos editores
     calculateLines('editorOne');
-    calculateLines('editorTwo');
-
 
     // voy a cargar un código de demo al iniciar la página, así no tengo que andar cargando nada a mano
     $.ajax({
         url: 'process.php?operation=loadDemo', // envío el parámetro operation para identificar la operación fileUpload
-        type: 'post',
-        contentType: false,
-        processData: false,
+        method: 'post',
         success: function(response) {
-            $("#resourceCode").html(response).trigger('change'); // disparo el trigger para cambio
+            $("#resourceCode").val(response).trigger('change'); // disparo el trigger para cambio
+            $("#analisisLexicoBtn").trigger('click');
             showAlert('Archivo demo cargado');
         },
         error: function () {

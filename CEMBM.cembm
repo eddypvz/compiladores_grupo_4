@@ -1,6 +1,51 @@
-#curso = 'Compiladores';
-#year = '2023';
 
-funcion imprimirYear() {
-	imprimir "{#curso} {#year}";
+*CM* Declaramos una clase
+clase {
+
+    *CM* Declaramos un método público
+    publ funcion unMetodo() {
+
+        *CM* Declaramos una variable con valor cero.
+        #i = 0;
+
+        *CM* Ciclo mientras (While en lenguajes populares)
+        CicloMientrasQue (#i < 10) {
+
+            *CM* Imprimimos la variable #i
+            mostrar #i;
+
+            *CM* Aumentamos la variable #i en 1
+            #i++;
+        }
+    }
+
+    prot funcion unMetodo() {
+         *CM* Declaramos una variable y la mostramos en modo debug.
+         #unaVariable = "Compiladores 2023";
+         depr(#unaVariable);
+    }
+
+    priv funcion unMetodo() {
+         *CM* Declaramos variables y detenemos el programa.
+
+        *CM* Declaramos una variable nula.
+        #z = nulo;
+
+        *CM* Si la variable está vacía, la llenamos con una cadena.
+         si (vacia(#z)) {
+            #z = "Una prueba";
+         }
+
+        *CM* Declaramos otras variables
+         #a = 1;
+         #b = 2;
+         #c = 3;
+
+         #a = #b + #c;
+         mostrar #a;
+         mostrar #z;
+
+        *CM* Detenemos el programa
+         morir();
+    }
 }
