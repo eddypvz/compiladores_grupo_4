@@ -1,0 +1,23 @@
+-/codigo funcional\-
+
+/-declaracion de variables tipo Caracter e Integral\-
+
+#Caracter dato;
+#Integral edad;
+
+-/Inicio del ciclo Hacer Mientras\-
+Hacer{
+    #Mostrar("Ingrese su edad");
+    #Leer(edad);
+    Si(edad<18){
+        #Mostrar("Es menor de edad");
+    }
+    Sino {
+        #Mostrar("Es mayor de edad");
+    }
+
+    -/el usuario ingresa S/N para seguir o salir del programa\-
+    #Mostrar("Ingrese S para seguir y N para salir");
+    #Leer(dato);
+}
+mientras(dato==S)

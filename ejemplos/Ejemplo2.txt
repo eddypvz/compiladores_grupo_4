@@ -1,0 +1,32 @@
+	  #Mostrar("su nuevo salario sera: ");
+#Decision dec1 = verdadero;
+#Decision dec2 = falso;
+#Decision dec3 = 234;
+#Decision dec3;
+#Caracter test;
+#Caracter test2 = "prueba";
+#Caracter test3 = 'prueba';
+#Decimal nuevo_valor;
+#Decimal salario = 1.0;
+#Integral integralUno = 5;
+#Integral integralDos;
+#Integral integralTres = 454;
+
+#Mostrar("Ingrese su salario");
+#Leer(salario);
+
+	si(salario < 2000){
+	  nuevo_valor = salario + (salario * 0.10);
+	  #Mostrar("su nuevo salario sera: ");
+	  #Mostrar(nuevo_valor);
+
+	}Sino{
+	  	nuevo_valor = salario (salario * 0.05);
+	  	#Mostrar("Su nuevo salario sera: ");
+		#Mostrar(nuevo_salario);
+    }
+
+    #Regresar 0;
+}
+
+

@@ -1,6 +1,8 @@
 <?php
-// incluyo el archivo de análisis
-include_once ('analisis.php');
+// incluyo archivos
+include_once ('tools.php');
+include_once ('RegexLib.php');
+include_once ('compilador.php');
 
 // Para subir archivos
 if (!empty($_GET['operation']) && $_GET['operation'] === 'fileUpload') {
@@ -37,9 +39,10 @@ if (!empty($_GET['operation']) && $_GET['operation'] === 'fileUpload') {
     die();
 }
 
+// Para cargar el demo
 if (!empty($_GET['operation']) && $_GET['operation'] === 'loadDemo') {
 
-    $location = "CEMBM.cembm";
+    $location = "ejemplos/Ejemplo2.txt";
     $handle = fopen($location, "r");
 
     // leo su contenido y cierro el archivo
@@ -57,18 +60,20 @@ if (!empty($_GET['operation']) && $_GET['operation'] === 'analisisLexico') {
 
     $codigo = $_POST['codigo'] ?? '';
 
+    $compiladorHandler = new Compilador($codigo);
+
     // Corro el análisis sintactico
     header("Content-Type: text/html");
-    analisisLexico($codigo);
+    $compiladorHandler->lexico();
     die();
 }
 
 if (!empty($_GET['operation']) && $_GET['operation'] === 'analisisSintactico') {
 
-    $codigo = $_POST['codigo'] ?? '';
+    /*$codigo = $_POST['codigo'] ?? '';
 
     // Corro el análisis sintactico
     header("Content-Type: text/html");
-    analisisSintactico($codigo);
+    analisisSintactico($codigo);*/
     die();
 }

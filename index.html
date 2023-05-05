@@ -20,7 +20,7 @@
                 Grupo 4
             </h1>
             <div>
-                Bienvenido al analizador realizado por el grupo No.4 para el análisis de código, curso Compiladores.
+                Bienvenido al analizador realizado por el grupo No.4 para el análisis de código, curso Compiladores. Este compilador analiza código "COSMOS". Para ver la documentación en la cual fue basado el compilador, haz clic en el siguiente enlace: <a href="ejemplos/COSMOS-1.pdf" target="_blank">Ver documentación COSMOS</a>
             </div>
         </div>
     </header>
@@ -29,9 +29,9 @@
             <label for="file-upload" class="btn btn-primary  m-1">
                 <i class="fas fa-folder-open me-1"></i>Abrir Archivo
             </label>
-            <button id="analisisLexicoBtn" class="btn btn-success m-1"><i class="fas fa-eye me-1"></i>Análisis Léxico</button>
-            <button id="analisisSintacticoBtn" class="btn btn-info m-1"><i class="fas fa-brain me-1"></i>Análisis Sintáctico</button>
-            <input id="file-upload" type="file" class="d-none"/>
+            <button class="analisisLexicoBtn btn btn-success m-1"><i class="fas fa-eye me-1"></i>Análisis Léxico</button>
+            <button class="analisisSintacticoBtn btn btn-info m-1"><i class="fas fa-brain me-1"></i>Análisis Sintáctico</button>
+            <input id="file-upload" type="file" class="file-upload d-none"/>
         </div>
 
         <div class="row">
@@ -45,8 +45,8 @@
                 </div>
             </div>
             <div class="col-12 col-sm-6">
-                <h5 class="mt-5 mb-3">Resultado <br> &nbsp;</h5>
-                <div id="analisisCode"></div>
+                <h3 class="mt-5 mb-3">Resultado <br> &nbsp;</h3>
+                <div id="analisisCodeTables" class="analisisCodeTables"></div>
             </div>
         </div>
     </div>

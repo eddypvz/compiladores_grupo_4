@@ -1,0 +1,46 @@
+/-Codigo no funcional\-
+
+#Integral Calcula() {
+    /-Declaracion de variables\-
+    #Integral a,b;
+    #Mostrar(Ingresa el valor de a);
+
+    -/no leera la variable a porque leer esta mal escrito\-
+    #leer(a);
+
+    -/no mostrara ya que Mostrar no se cerro con punto y coma ;\-
+    #Mostrar("Ingresa el valor de b)
+    #Leer(b);
+    #Integral suma=a+b;
+
+    -/integral esta mal escrito\-
+    #integral resta=a-b;
+    #Integral opc;
+
+    -/mostrar esta mal escrito\-
+    #mostrar("Ingrese una opcion. 1=Suma 2=resta");
+    #Leer(opc);
+
+    Cambio(opc) {
+        #Escenario 1:
+            -/falta ; al final de la instruccion\-
+            #Mostrar("La suma es:")
+            #Mostrar(suma);
+        Freno;
+
+        -/faltan los dos punto\-
+        #Escenario 2
+            -/mostrar esta mal escrito\-
+            #mostrar("La resta es:");
+            #Mostrar(resta);
+
+        /-falta ;\-
+        Freno
+
+        -/faltan los dos punto\-
+        #Pordefecto
+        #Mostrar("Opcion invalida");
+        Freno;
+    }
+    #Regresar 0;
+}

@@ -1,5 +1,6 @@
 <?php
 function dd($var) {
+    //print_r("___DEBUG___\n");
     print '<pre>';
     print_r($var);
     print '</pre>';
@@ -36,11 +37,14 @@ function prepararSalida($arrayCodigo) {
 }
 
 function analisisLexico($codigo) {
-    print "Análisis Léxico <br> <br>";
+    /*print "Análisis Léxico <br> <br>";
 
     $code = separarPorSaltoDeLinea($codigo);
 
-    print prepararSalida($code);
+    print prepararSalida($code);*/
+
+    $compiladorHandler = new Compilador($codigo);
+    $result = $compiladorHandler->lexico();
 }
 
 function analisisSintactico($codigo) {

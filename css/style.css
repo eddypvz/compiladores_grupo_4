@@ -43,6 +43,11 @@ footer {
     border-radius: 2px;
     padding: 20px 10px;
     width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    font-size: 12px;
+    /*height: 50vh;
+    overflow: auto;*/
 }
 
 .editor .line-numbers {
@@ -93,4 +98,10 @@ footer {
     width: 40px;
     text-align: left;
     color: #506882;
+}
+
+.analisisCodeTables {
+    font-size: 11px;
+    max-height: 80vh;
+    overflow-y: auto;
 }

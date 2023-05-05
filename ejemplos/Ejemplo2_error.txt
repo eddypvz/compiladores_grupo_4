@@ -1,0 +1,20 @@
+
+Decimal salario; /-Variable mal codificada\-
+#Decimal nuevo_valor;
+
+#Mostra("Ingrese su salario"); /-Palabra reservada mal escrita\-
+#Leer(salario);
+
+	si(salario < 2000){
+	  nuevo_valor = salario + (salario * 0.10);
+	  #Mostrar("su nuevo salario sera: ");
+	  #Mostrar(nuevo_valor);
+		/-Ciclo sin cierre\-
+	 Sino{
+	  	nuevo_valor = salario (salario x 0.05); /-Operador inexistente\-
+	  	#Mostrar("Su nuevo salario sera: ");
+		#Mostrar(nuevo_salario);
+	       }
+#Regresar /-Palabra reservada mal escrita y si punto y coma \-
+}
+

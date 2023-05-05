@@ -16,7 +16,7 @@ $(document).ready(function () {
     }
 
     // Botones
-    $("#analisisLexicoBtn").click(function () {
+    $(".analisisLexicoBtn").click(function () {
 
         const codigo = $("#resourceCode").val();
         console.log(codigo);
@@ -28,7 +28,7 @@ $(document).ready(function () {
                 codigo: codigo
             },
             success: function(response) {
-                $("#analisisCode").html(response); // disparo el trigger para cambio
+                $("#analisisCodeTables").html(response); // disparo el trigger para cambio
                 showAlert('Análisis léxico realizado');
             },
             error: function () {
@@ -37,7 +37,7 @@ $(document).ready(function () {
         });
     });
 
-    $("#analisisSintacticoBtn").click(function () {
+    $(".analisisSintacticoBtn").click(function () {
 
         const codigo = $("#resourceCode").val();
 
@@ -48,7 +48,7 @@ $(document).ready(function () {
                 codigo: codigo
             },
             success: function(response) {
-                $("#analisisCode").html(response); // disparo el trigger para cambio
+                $("#analisisCodeTables").html(response); // disparo el trigger para cambio
                 showAlert('Análisis sintáctico realizado');
             },
             error: function () {
@@ -58,7 +58,7 @@ $(document).ready(function () {
     });
 
     // Cuando seleccione un archivo a subir
-    $("#file-upload").on("change", function (e) {
+    $(".file-upload").on("change", function (e) {
 
         const fd = new FormData();
         const files = $(this)[0].files[0];
@@ -124,7 +124,7 @@ $(document).ready(function () {
         method: 'post',
         success: function(response) {
             $("#resourceCode").val(response).trigger('change'); // disparo el trigger para cambio
-            $("#analisisLexicoBtn").trigger('click');
+            $(".analisisLexicoBtn").trigger('click');
             showAlert('Archivo demo cargado');
         },
         error: function () {
