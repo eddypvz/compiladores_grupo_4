@@ -20,17 +20,4 @@ class RegexLib {
         }
         return !empty($valor);
     }
-
-    public function validarOperacionLogica($operadorLogico) {
-        $valor = [];
-        preg_match("/(\")(.*)(\")/", $cadena, $valor); // Solo caracteres
-        $valor = $valor[0] ?? false;
-
-        if (empty($valor)) {
-            $valor = [];
-            preg_match("/(\')(.*)(\')/", $cadena, $valor); // Solo caracteres
-            $valor = $valor[0] ?? false;
-        }
-        return !empty($valor);
-    }
 }

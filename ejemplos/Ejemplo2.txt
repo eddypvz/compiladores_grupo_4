@@ -12,6 +12,8 @@
 #Integral integralDos;
 #Integral integralTres = 454;
 
+-/Este es un ejemplo\-
+
 #Mostrar("Ingrese su salario");
 #Leer(salario);
 
@@ -25,6 +27,10 @@
 	  	#Mostrar("Su nuevo salario sera: ");
 		#Mostrar(nuevo_salario);
     }
+
+    Hacer {
+        #Mostrar(“Este es un ejemplo”)
+    } Mientras (x<8)
 
     #Regresar 0;
 }

@@ -50,6 +50,10 @@ class Compilador {
         // con_valor = Declaración con valor, osea declara el valor del identificador en la misma línea
         // sin_valor = Declaración de la variable sin valor, solo la declara
 
+        /*'token' => '/^}\s*\r*|\n*Sino\s*\r*|\n*{/',
+                'regex' => [
+                    'reservada' => '/^}\s*\r*|\n*Sino\s*\r*|\n*{/',
+                ],*/
 
         $this->tokensLib['palabrasReservadas'] = [
             'if' => [
@@ -59,6 +63,12 @@ class Compilador {
                     'valor' => '/\((.*)\)/i',
                 ],
                 'modificador' => 'exigir_opt_logica'
+            ],
+            'else' => [
+                'token' => '/^}\s*Sino\s*{/',
+                'regex' => [
+                    'reservada' => '/^}\s*Sino\s*{/',
+                ],
             ],
             'print' => [
                 'token' => '/^#Mostrar/i',
@@ -82,9 +92,9 @@ class Compilador {
                 ],
             ],
             'braceClose' => [
-                'token' => '/^}/i',
+                'token' => '/^}$/i',
                 'regex' => [
-                    'reservada' => '/^}/i',
+                    'reservada' => '/^}$/i',
                 ],
             ],
             'braceOpen' => [
@@ -93,31 +103,98 @@ class Compilador {
                     'reservada' => '/^{/i',
                 ],
             ],
+            'do' => [
+                'token' => '/^Hacer/',
+                'regex' => [
+                    'reservada' => '/^Hacer/',
+                ],
+            ],
+            'while' => [
+                'token' => '/^}\s*Mientras\s*\(/',
+                'regex' => [
+                    'reservada' => '/^}\s*Mientras\s*\(/',
+                ],
+            ],
+            'comment' => [
+                'token' => '/^\s*-\//',
+                'regex' => [
+                    'reservada' => '/^\s*-\//',
+                    'valor' => '/...*\\-$/',
+                ],
+            ],
         ];
 
         $this->tokensLib['logicos'] = [
+            'greater' => [
+                'token' => '/>/i',
+                'regex' => [
+                    'var_var' => '/\s*^[a-zA-Z_]+[0-9]*\s*>\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'var_num' => '/\s*^[a-zA-Z_]+[0-9]*\s*>\s*[0-9]+\s*$/i',
+                    'num_var' => '/\s*^[0-9]+\s*>\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'num_num' => '/\s*^[0-9]+\s*>\s*[0-9]+\s*$/i',
+                ],
+            ],
             'and' => [
                 'token' => '/&&/i',
                 'regex' => [
-                    'valor' => '/\s*([a-zA-Z_]+[0-9]*|[0-9]*)*\s*&&\s*([a-zA-Z_]+[0-9]*|[0-9]*)*\s*/i'
-                ],
+                    'var_var' => '/\s*^[a-zA-Z_]+[0-9]*\s*&&\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'var_num' => '/\s*^[a-zA-Z_]+[0-9]*\s*&&\s*[0-9]+\s*$/i',
+                    'num_var' => '/\s*^[0-9]+\s*&&\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'num_num' => '/\s*^[0-9]+\s*&&\s*[0-9]+\s*$/i',
+                ]
+            ],
+            'or' => [
+                'token' => '/\|\|/i',
+                'regex' => [
+                    'var_var' => '/\s*^[a-zA-Z_]+[0-9]*\s*\|\|\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'var_num' => '/\s*^[a-zA-Z_]+[0-9]*\s*\|\|\s*[0-9]+\s*$/i',
+                    'num_var' => '/\s*^[0-9]+\s*\|\|\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'num_num' => '/\s*^[0-9]+\s*\|\|\s*[0-9]+\s*$/i',
+                ]
             ],
             'diff' => [
                 'token' => '/!=/i',
                 'regex' => [
-                    'valor' => '/\s*([a-zA-Z_]+[0-9]*|[0-9]*)*\s*!=\s*([a-zA-Z_]+[0-9]*|[0-9]*)*\s*/i'
+                    'var_var' => '/\s*^[a-zA-Z_]+[0-9]*\s*!=\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'var_num' => '/\s*^[a-zA-Z_]+[0-9]*\s*!=\s*[0-9]+\s*$/i',
+                    'num_var' => '/\s*^[0-9]+\s*!=\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'num_num' => '/\s*^[0-9]+\s*!=\s*[0-9]+\s*$/i',
                 ],
             ],
             'minor' => [
                 'token' => '/</i',
                 'regex' => [
-                    'valor' => '/\s*([a-zA-Z_]+[0-9]*|[0-9]*)*\s*<\s*([a-zA-Z_]+[0-9]*|[0-9]*)*\s*/i'
+                    'var_var' => '/\s*^[a-zA-Z_]+[0-9]*\s*<\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'var_num' => '/\s*^[a-zA-Z_]+[0-9]*\s*<\s*[0-9]+\s*$/i',
+                    'num_var' => '/\s*^[0-9]+\s*<\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'num_num' => '/\s*^[0-9]+\s*<\s*[0-9]+\s*$/i',
                 ],
             ],
-            'greater' => [
-                'token' => '/>/i',
+            'igual' => [
+                'token' => '/==/i',
                 'regex' => [
-                    'valor' => '/\s*([a-zA-Z_]+[0-9]*|[0-9]*)*\s*>\s*([a-zA-Z_]+[0-9]*|[0-9]*)*\s*/i'
+                    'var_var' => '/\s*^[a-zA-Z_]+[0-9]*\s*==\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'var_num' => '/\s*^[a-zA-Z_]+[0-9]*\s*==\s*[0-9]+\s*$/i',
+                    'num_var' => '/\s*^[0-9]+\s*==\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'num_num' => '/\s*^[0-9]+\s*==\s*[0-9]+\s*$/i',
+                ],
+            ],
+            'greater_igual' => [
+                'token' => '/>=/i',
+                'regex' => [
+                    'var_var' => '/\s*^[a-zA-Z_]+[0-9]*\s*>=\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'var_num' => '/\s*^[a-zA-Z_]+[0-9]*\s*>=\s*[0-9]+\s*$/i',
+                    'num_var' => '/\s*^[0-9]+\s*>=\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'num_num' => '/\s*^[0-9]+\s*>=\s*[0-9]+\s*$/i',
+                ],
+            ],
+            'minor_igual' => [
+                'token' => '/<=/i',
+                'regex' => [
+                    'var_var' => '/\s*^[a-zA-Z_]+[0-9]*\s*<=\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'var_num' => '/\s*^[a-zA-Z_]+[0-9]*\s*<=\s*[0-9]+\s*$/i',
+                    'num_var' => '/\s*^[0-9]+\s*<=\s*[a-zA-Z_]+[0-9]*\s*$/i',
+                    'num_num' => '/\s*^[0-9]+\s*<=\s*[0-9]+\s*$/i',
                 ],
             ],
         ];
@@ -127,7 +204,6 @@ class Compilador {
             // #Decimal salario = "test";
 
             // para sin_valor: Que inicie con el identificador del tipo de dato (#Caracter, #Decimal, etc), luego uno o más espacios en blanco (\s), seguido de N letras hasta que encuentre uno o N espacios en blanco seguido de punto y coma. Ejemplo:
-            // #Decimal salario;
 
             'string' => [
                 'token' => '/\s+[a-zA-Z_]+[0-9]*\s*/',
@@ -142,7 +218,7 @@ class Compilador {
                 'regex' => [
                     'con_valor' => '/^#Decimal\s*[a-zA-Z_]+[a-zA-Z_0-9]*\s*=\s*/i',
                     'sin_valor' => '/^#Decimal\s*[a-zA-Z_]+[a-zA-Z_0-9]*\s*/i',
-                    'valor' => '/\s*[0-9]+.?[0-9]+$/i',
+                    'valor' => '/\s*^[0-9]+.?[0-9]+$/i',
                 ],
             ],
             'integer' => [
@@ -162,11 +238,23 @@ class Compilador {
                 ],
             ],
         ];
+
+        $this->tokensLib['asignacion'] = [
+            'asignacion_var' => [
+                'token' => '/\s*^[a-zA-Z_]+[0-9]*\s*=/i',
+                'regex' => [
+                    'asignacion' => '/\s*^[a-zA-Z_]+[0-9]*\s*=/i',
+                ],
+            ],
+        ];
     }
 
     public function lexico() {
 
         $arrCodigo = separarPorSaltoDeLinea($this->codigo);
+
+        /*dd($arrCodigo);
+        die();*/
 
         foreach ($arrCodigo as $noLinea => $linea) {
             $this->evaluarLinea($linea, $noLinea + 1);
@@ -219,6 +307,7 @@ class Compilador {
 
     private function evaluarLinea($lineaCodigo, $noLinea, $fromParentLine = false) {
 
+        // este indica si la linea se procesó correctamente o no, esto es para agregar el token al listado o no, al fina.
         $lineaProcesada = false;
         $lineaCodigo = trim($lineaCodigo); // borro espacios en blanco adelante y al final de la linea
         $lineaRespuesta = '';
@@ -226,11 +315,13 @@ class Compilador {
         // Si la línea está en blanco, no hago nada
         if (empty($lineaCodigo)) return '';
 
+        // Se recorre la librería de tokens inicial
         foreach ($this->tokensLib as $tipoToken => $tokenList) {
 
             // si son lógicos, los paso de largo porque los evaluo diferente dentro de una palabra reservada siempre
             if ($tipoToken === 'logicos') continue;
 
+            // Se recorre la lista de tokens
             foreach ($tokenList as $subtipo => $token) {
 
                 foreach ($token['regex'] as $typeRegex => $regex) {
@@ -239,11 +330,16 @@ class Compilador {
                     if ($typeRegex === 'valor') continue;
 
                     // Validación si la linea coincide
-                    $coincidencias = '';
+                    $coincidencias = [];
+
                     $coincide = preg_match($regex, $lineaCodigo, $coincidencias);
 
                     // Si coincide con algo de la librería, lo quito de la cadena para seguir evaluando
                     if (!empty($coincide)) {
+
+                        /*dd($coincide);
+                        dd($lineaCodigo);
+                        dd($token);*/
 
                         $error = '';
                         $lineaRespuesta = '';
@@ -287,15 +383,23 @@ class Compilador {
 
                                                 // si es un valor lógico, valido su estructura, le caigo encima a las variables para no usar otras
                                                 if (!empty($valorLogico)) {
-                                                    $optLogicaDetectada = true;
 
-                                                    $valorLogico = [];
-                                                    preg_match($regexLogico['regex']['valor'], $valor, $valorLogico); // Solo caracteres
-                                                    $valorLogico = $valorLogico[0] ?? false;
+                                                    foreach ($regexLogico['regex'] as $reg => $regexValue) {
 
-                                                    if (empty($valorLogico)) {
+                                                        $evalRegexLogica = [];
+                                                        preg_match($regexValue, $valor, $evalRegexLogica); // Solo caracteres
+                                                        $evalRegexLogica = $evalRegexLogica[0] ?? false;
+
+                                                        if (!empty($evalRegexLogica)) {
+                                                            $optLogicaDetectada = true;
+                                                        }
+                                                    }
+
+                                                    if (!$optLogicaDetectada) {
+                                                        //$optLogicaDetectada = true;
                                                         $error = 'Operación lógica inválida "'.$valor.'", línea '.$noLinea;
                                                     }
+
                                                 }
                                             }
 
@@ -360,19 +464,100 @@ class Compilador {
                             $lineaProcesada = true;
                             $this->registrarToken($tipoToken, $subtipo, $identificador, $regex, $typeRegex, $noLinea, $valor, $error);
                         }
+                        else if ($tipoToken === 'asignacion') {
 
+                            $lineaRespuesta = preg_replace($regex, '', $lineaCodigo); // Lo reemplazo con nada
+                            $lineaRespuesta = str_replace(';', '', $lineaRespuesta);
 
-                        // Si todavía hay contenido en la linea, vuelvo a llamar a la función de forma recursiva
-                        /*if (!empty(trim($lineaRespuesta))) {
-                            $lineaRespuesta = $this->evaluarLinea($lineaRespuesta, $noLinea, true);
-                        }*/
+                            $coincidencia = $coincidencias[0] ?? '';
+                            $identificador = '';
+                            $valor = '';
+
+                            // busco el token (el identificador)
+                            preg_match($token['token'], $coincidencia, $identificador); // Solo caracteres
+                            $identificador = $identificador[0] ?? '';
+
+                            // Si es una asignación de variable
+                            if (!empty($identificador)) {
+
+                                $lineaRespuesta = trim($lineaRespuesta);
+
+                                $arrOperaciones = [];
+                                $caracteres = str_split($lineaRespuesta);
+
+                                $parentesis = 0;
+                                $parentesisAbre = 0;
+                                $parentesisCierra = 0;
+                                foreach ($caracteres as $key => $caracter) {
+                                    if ($caracter === ' ') {
+                                        $parentesis++;
+                                        continue;
+                                    }
+
+                                    if ($caracter === '+' || $caracter === '-' || $caracter === '*' || $caracter === '/' || $caracter === '%' || $caracter === '=') {
+                                        $parentesis++;
+                                        continue;
+                                    }
+
+                                    if ($caracter === '(') {
+                                        $parentesis++;
+                                        $parentesisAbre++;
+                                        continue;
+                                    }
+
+                                    if ($caracter === ')') {
+                                        $parentesis++;
+                                        $parentesisCierra++;
+                                        continue;
+                                    }
+
+                                    // Inicio la posición para que no de error la primera vez
+                                    if (!isset($arrOperaciones[$parentesis])) {
+                                        $arrOperaciones[$parentesis] = '';
+                                    }
+
+                                    $arrOperaciones[$parentesis] .= $caracter;
+                                }
+
+                                if ($parentesisAbre !== $parentesisCierra) {
+                                    $error = "Paréntesis faltante, línea {$noLinea}";
+                                }
+
+                                foreach ($arrOperaciones as $valor) {
+
+                                    $valor = trim($valor);
+
+                                    // Si es un identificador
+                                    $tmpVal = [];
+                                    $isIdenti = preg_match('/\s*^[a-zA-Z_]+[0-9]*/i', $valor, $tmpVal); // Solo caracteres
+
+                                    // validamos si es un float
+                                    $tmpVal = [];
+                                    $isFloat = preg_match('/\s*^[0-9]+.?[0-9]+$/i', $valor, $tmpVal); // Solo caracteres
+
+                                    $tmpVal = [];
+                                    $isInt = preg_match('/\s*^[0-9]+$/i', $valor, $tmpVal); // Solo caracteres
+
+                                    if (empty($isIdenti) && empty($isFloat) && empty($isInt)) {
+                                        $error = "Posible identificador o tipo de valor desconocido, línea {$noLinea}";
+                                    }
+                                }
+                            }
+
+                            // Registro el token
+                            $lineaProcesada = true;
+                            $this->registrarToken($tipoToken, $subtipo, $identificador, $regex, $typeRegex, $noLinea, $valor, $error);
+                        }
+                    }
+                    else {
+
                     }
                 }
             }
         }
 
         // si la linea no se detectó en ningún lugar, la agrego como error
-        if (!$lineaProcesada && !$fromParentLine) {
+        if (!$lineaProcesada) {
             $this->registrarToken('otros', '', '', '', '', $noLinea, $lineaCodigo, "Expresión desconocida en línea {$noLinea}");
         }
 
