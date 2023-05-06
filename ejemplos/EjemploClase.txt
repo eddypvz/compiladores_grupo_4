@@ -1,0 +1,22 @@
+Turno con errores Integral Sistema () {
+
+TurnoIntegral> miCola;
+
+-/Agregar elementos a la Turno-\
+
+ miColaingresar(10);
+ miCola.ingresar(20);
+ miCola.ingres(30);
+
+-/Mostrar el primer elemento del Turno-\
+
+ Mostrar(“Primer elemento: “, miCola.frente()); -/miCola.frente() indica el
+inicio del Turno-\
+
+ Eliminar el primer elemento del Turno-\
+
+ miCola.quitar()
+
+ -/Eliminar el primer elemento del Turno-\
+
+ Mostr(“Cantidad de elementos en la cola: ,micola.tamaño());

@@ -1,7 +1,7 @@
-	  #Mostrar("su nuevo salario sera: ");
+#Mostrar("su nuevo salario sera: ");
 #Decision dec1 = verdadero;
 #Decision dec2 = falso;
-#Decision dec3 = 234;
+#Decision dec3 = falso;
 #Decision dec3;
 #Caracter test;
 #Caracter test2 = "prueba";
@@ -29,8 +29,8 @@
     }
 
     Hacer {
-        #Mostrar(“Este es un ejemplo”)
-    } Mientras (x<8)
+        #Mostrar(“Este es un ejemplo”);
+    } Mientras (x<8);
 
     #Regresar 0;
 }

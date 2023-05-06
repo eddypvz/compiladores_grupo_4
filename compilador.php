@@ -62,13 +62,15 @@ class Compilador {
                     'reservada' => '/^Si/i',
                     'valor' => '/\((.*)\)/i',
                 ],
-                'modificador' => 'exigir_opt_logica'
+                'modificador' => 'exigir_opt_logica',
+                'noFinPuntoComa' => true
             ],
             'else' => [
                 'token' => '/^}\s*Sino\s*{/',
                 'regex' => [
                     'reservada' => '/^}\s*Sino\s*{/',
                 ],
+                'noFinPuntoComa' => true
             ],
             'print' => [
                 'token' => '/^#Mostrar/i',
@@ -108,18 +110,21 @@ class Compilador {
                 'regex' => [
                     'reservada' => '/^}$/i',
                 ],
+                'noFinPuntoComa' => true
             ],
             'braceOpen' => [
-                'token' => '/^{/i',
+                'token' => '/^{$/i',
                 'regex' => [
-                    'reservada' => '/^{/i',
+                    'reservada' => '/^{$/i',
                 ],
+                'noFinPuntoComa' => true
             ],
             'do' => [
                 'token' => '/^Hacer/',
                 'regex' => [
                     'reservada' => '/^Hacer/',
                 ],
+                'noFinPuntoComa' => true
             ],
             'do_while' => [
                 'token' => '/^}\s*Mientras\s*\(/',
@@ -168,6 +173,7 @@ class Compilador {
                 'regex' => [
                     'reservada' => '/^Cola\s*/i',
                 ],
+                'noFinPuntoComa' => true
             ],
             'comment' => [
                 'token' => '/^\s*-\//',
@@ -175,6 +181,7 @@ class Compilador {
                     'reservada' => '/^\s*-\//',
                     'valor' => '/...*\\-$/',
                 ],
+                'noFinPuntoComa' => true
             ],
         ];
 
@@ -300,20 +307,7 @@ class Compilador {
                     'asignacion' => '/\s*^[a-zA-Z_]+[0-9]*\s*=/i',
                 ],
             ],
-            'llamado_metodo' => [
-                'token' => '/\s*^[a-zA-Z_]+[0-9]*\s*.\s*[a-zA-Z_]+[0-9]*\s*/i',
-                'regex' => [
-                    'asignacion' => '/\s*^[a-zA-Z_]+[0-9]*\s*.\s*[a-zA-Z_]+[0-9]*\s*/i',
-                    'modificador' => 'sin_valor'
-                ],
-            ],
-            'llamado_metodo_tipado' => [
-                'token' => '/\s*^[a-zA-Z_]+[0-9]*\s*.#[a-zA-Z_]+[0-9]*\s*/i',
-                'regex' => [
-                    'asignacion' => '/\s*^[a-zA-Z_]+[0-9]*\s*.#[a-zA-Z_]+[0-9]*\s*/i',
-                    'modificador' => 'sin_valor'
-                ],
-            ],
+
         ];
     }
 
@@ -398,6 +392,8 @@ class Compilador {
                     if ($typeRegex === 'valor') continue;
                     if ($typeRegex === 'modificador') continue;
 
+                    //dd($regex);
+
                     // Validación si la linea coincide
                     $coincidencias = [];
 
@@ -412,6 +408,16 @@ class Compilador {
 
                         $error = '';
                         $lineaRespuesta = '';
+
+                        // valido ;
+                        if (empty($token['noFinPuntoComa'])) {
+                            $finalizaPuntoComa = preg_match('/;$/', $lineaCodigo);
+
+                            if (!$finalizaPuntoComa) {
+                                $this->registrarToken('otros', '', '', '', '', $noLinea, $lineaCodigo, "Falta punto y coma en línea {$noLinea}");
+                                continue;
+                            }
+                        }
 
                         // VALIDACIÓN POR TIPO DE TOKEN
                         if ($tipoToken === 'palabrasReservadas') {
@@ -534,7 +540,6 @@ class Compilador {
                             $this->registrarToken($tipoToken, $subtipo, $identificador, $regex, $typeRegex, $noLinea, $valor, $error);
                         }
                         else if ($tipoToken === 'asignacion') {
-
                             $lineaRespuesta = preg_replace($regex, '', $lineaCodigo); // Lo reemplazo con nada
                             $lineaRespuesta = str_replace(';', '', $lineaRespuesta);
 
@@ -625,9 +630,6 @@ class Compilador {
                             $lineaProcesada = true;
                             $this->registrarToken($tipoToken, $subtipo, $identificador, $regex, $typeRegex, $noLinea, $valor, $error);
                         }
-                    }
-                    else {
-
                     }
                 }
             }
