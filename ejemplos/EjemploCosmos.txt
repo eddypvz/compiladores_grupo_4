@@ -1,4 +1,4 @@
-Clase Vehículo {
+Clase Vehiculo {
 
     Privado:
     #Caracter nombre;
@@ -9,18 +9,19 @@ Clase Vehículo {
 
         Cola<Integral> miCola;
 
-        -/Agregar elementos a la Turno -\
+        -/Agregar elementos a la Turno \-
         miCola.ingresar(10);
         miCola.ingresar(20);
         miCola.ingresar(30);
 
-        -/Mostrar el primer elemento del Turno-\
-        Mostrar(“Primer elemento: “, miCola.frente()); -/miCola.frente() indica el inicio del Turno-\
+        -/Mostrar el primer elemento del Turno\-
+        Mostrar(“Primer elemento: “, miCola.frente());
+        -/miCola.frente() indica el inicio del Turno\-
 
-        -/Eliminar el primer elemento del Turno-\
+        -/Eliminar el primer elemento del Turno\-
         miCola.quitar();
 
-        -/Eliminar el primer elemento del Turno-\
+        -/Eliminar el primer elemento del Turno\-
         Mostrar(“Cantidad de elementos en la cola: “,micola.tamaño());
     }
 
@@ -30,24 +31,29 @@ Clase Vehículo {
         UEPS[tipo_de_dato] nombre_pila;
         UEPS[Integral] ejemplo;
 
-        ejemplo.ingresar(9); -/En este caso se ingresa el numero 9 al tope de la pila-\
-        ejemplo.ingresar(8); -/En este caso se ingresa el numero 8 al tope de la pila-\
-        ejemplo.quitar; -/En este se esta quitando el numero del tope de la pila-\
-        ejemplo.mostrar; -/En este caso imprime el numero que esta al tope de la pila-\
-        Mientras(ejemplo.vacio){ mostrar(“la pila esta vacia”); } -/En este el ciclo es verdadero cuando la pila esta vacía.-\
+        ejemplo.ingresar(9);
+        -/En este caso se ingresa el numero 9 al tope de la pila\-
+        ejemplo.ingresar(8);
+        -/En este caso se ingresa el numero 8 al tope de la pila\-
+        ejemplo.quitar;
+        -/En este se esta quitando el numero del tope de la pila\-
+        ejemplo.mostrar;
+        -/En este caso imprime el numero que esta al tope de la pila\-
+        Mientras(ejemplo){
+            mostrar(“la pila esta vacia”);
+        }
+        -/En este el ciclo es verdadero cuando la pila esta vacía.\-
     }
 }
 
 #Integral Sistema() {
 
-    #Integral<3> nombre; -/para diferenciar el vector se utiliza la siguiente estructura.\-
-    nombre<0> = 10; -/aquí se está asignando al espacio 0 en el vector nombre el valor de 10;
+    -/aquí se está asignando al espacio 0 en el vector nombre el valor de 10;\-
+    nombre = 10;
 
-    #Integral Tabla<2><3> = {{1,2,3},{4,5,6}};
-    #Mostrar("Elemento en la fila 0 y columna 1:";
-    #Mostrar(Tabla<0><1>);
+    #Mostrar("Elemento en la fila 0 y columna 1:");
+
     -/ cambiar el valor del elemento en la fila 1 y columna 2\-
-    Tabla<1><2> = 10;
 
     Cambio(num){
         #Escenario 1:

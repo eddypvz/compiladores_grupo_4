@@ -91,6 +91,18 @@ class Compilador {
                     'valor' => '/\s*...*\s*;$/i',
                 ],
             ],
+            'scenario' => [
+                'token' => '/^#Escenario/i',
+                'regex' => [
+                    'reservada' => '/^#Escenario/i',
+                ],
+            ],
+            'default' => [
+                'token' => '/^#Pordefecto/i',
+                'regex' => [
+                    'reservada' => '/^#Pordefecto/i',
+                ],
+            ],
             'braceClose' => [
                 'token' => '/^}$/i',
                 'regex' => [
@@ -109,10 +121,52 @@ class Compilador {
                     'reservada' => '/^Hacer/',
                 ],
             ],
-            'while' => [
+            'do_while' => [
                 'token' => '/^}\s*Mientras\s*\(/',
                 'regex' => [
                     'reservada' => '/^}\s*Mientras\s*\(/',
+                ],
+            ],
+            'while' => [
+                'token' => '/^Mientras\s*/',
+                'regex' => [
+                    'reservada' => '/^Mientras\s*/',
+                ],
+            ],
+            'class' => [
+                'token' => '/^Clase\s*{?/i',
+                'regex' => [
+                    'reservada' => '/^Clase\s*{?/i',
+                ],
+            ],
+            'switch' => [
+                'token' => '/^Cambio\s*\(?/i',
+                'regex' => [
+                    'reservada' => '/^Cambio\s*\(?/i',
+                ],
+            ],
+            'private' => [
+                'token' => '/^Privado:\s*/i',
+                'regex' => [
+                    'reservada' => '/^Privado:\s*/i',
+                ],
+            ],
+            'public' => [
+                'token' => '/^Publico:\s*/i',
+                'regex' => [
+                    'reservada' => '/^Publico:\s*/i',
+                ],
+            ],
+            'void' => [
+                'token' => '/^#Faltante\s*/i',
+                'regex' => [
+                    'reservada' => '/^#Faltante\s*/i',
+                ],
+            ],
+            'queue' => [
+                'token' => '/^Cola\s*/i',
+                'regex' => [
+                    'reservada' => '/^Cola\s*/i',
                 ],
             ],
             'comment' => [
@@ -246,6 +300,20 @@ class Compilador {
                     'asignacion' => '/\s*^[a-zA-Z_]+[0-9]*\s*=/i',
                 ],
             ],
+            'llamado_metodo' => [
+                'token' => '/\s*^[a-zA-Z_]+[0-9]*\s*.\s*[a-zA-Z_]+[0-9]*\s*/i',
+                'regex' => [
+                    'asignacion' => '/\s*^[a-zA-Z_]+[0-9]*\s*.\s*[a-zA-Z_]+[0-9]*\s*/i',
+                    'modificador' => 'sin_valor'
+                ],
+            ],
+            'llamado_metodo_tipado' => [
+                'token' => '/\s*^[a-zA-Z_]+[0-9]*\s*.#[a-zA-Z_]+[0-9]*\s*/i',
+                'regex' => [
+                    'asignacion' => '/\s*^[a-zA-Z_]+[0-9]*\s*.#[a-zA-Z_]+[0-9]*\s*/i',
+                    'modificador' => 'sin_valor'
+                ],
+            ],
         ];
     }
 
@@ -328,6 +396,7 @@ class Compilador {
 
                     // Si el regex es de tipo valor, lo salto ya que lo evaluo diferente
                     if ($typeRegex === 'valor') continue;
+                    if ($typeRegex === 'modificador') continue;
 
                     // Validación si la linea coincide
                     $coincidencias = [];
@@ -520,9 +589,13 @@ class Compilador {
                                 }
 
                                 if ($parentesisAbre !== $parentesisCierra) {
+                                    if (!empty($token['regex']['modificador']) && $token['regex']['modificador'] === 'sin_valor') {
+                                        continue;
+                                    }
                                     $error = "Paréntesis faltante, línea {$noLinea}";
                                 }
 
+                                //dd($token);
                                 foreach ($arrOperaciones as $valor) {
 
                                     $valor = trim($valor);
@@ -539,6 +612,10 @@ class Compilador {
                                     $isInt = preg_match('/\s*^[0-9]+$/i', $valor, $tmpVal); // Solo caracteres
 
                                     if (empty($isIdenti) && empty($isFloat) && empty($isInt)) {
+
+                                        if (!empty($token['regex']['modificador']) && $token['regex']['modificador'] === 'sin_valor') {
+                                            continue;
+                                        }
                                         $error = "Posible identificador o tipo de valor desconocido, línea {$noLinea}";
                                     }
                                 }
