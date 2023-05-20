@@ -322,7 +322,37 @@ class Compilador {
             $this->evaluarLinea($linea, $noLinea + 1);
         }
 
-        foreach ($this->tokensList as $tipo => $list) {
+        //dd($this->tokensList);
+
+        $arregloResultados = [
+            'success' => [],
+            'errors' => [],
+        ];
+
+        $totalErrors = 0;
+        $totalTokens = 0;
+
+        foreach ($this->tokensList as $tipo => $value) {
+            foreach ($value as $keyTmp => $keyValue) {
+
+                if (!empty($keyValue['error'])) {
+                    $totalErrors ++;
+                    $arregloResultados['errors'][$tipo][$keyTmp] = $keyValue;
+                }
+                else {
+                    $totalTokens ++;
+                    $arregloResultados['success'][$tipo][$keyTmp] = $keyValue;
+                }
+            }
+        }
+
+        ?>
+        <div>
+            <h5 class="text-danger">Listado de errores: <?= $totalErrors ?></h5>
+            <hr>
+        </div>
+        <?php
+        foreach ($arregloResultados['errors'] as $tipo => $list) {
             ?>
             <h5><?php print ucfirst($tipo) ?></h5>
             <table class="table table-striped mb-5">
@@ -358,6 +388,52 @@ class Compilador {
             <?php
         }
 
+        if (count($arregloResultados['errors']) === 0) {
+            ?>
+            <h6 class="mb-5 text-muted">No se han encontrado errores</h6>
+            <?php
+        }
+        ?>
+        <div>
+            <h5 class="text-success">Resultado de análisis: <?= $totalTokens ?></h5>
+            <hr>
+        </div>
+        <?php
+        foreach ($arregloResultados['success'] as $tipo => $list) {
+            ?>
+            <h5><?php print ucfirst($tipo) ?></h5>
+            <table class="table table-striped mb-5">
+                <thead class="thead-dark">
+                <tr>
+                    <td>Línea</td>
+                    <td>Tipo</td>
+                    <td>Token</td>
+                    <td>Regex</td>
+                    <td>Subtipo</td>
+                    <td>Valor</td>
+                    <td>Error</td>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                foreach ($list as $token) {
+                    ?>
+                    <tr class="<?= (!empty($token['error'])) ? 'text-danger' : '' ?>">
+                        <td><?= $token['line'] ?></td>
+                        <td><?= $token['tipo'] ?></td>
+                        <td><?= $token['token'] ?></td>
+                        <td><?= $token['regex'] ?></td>
+                        <td><?= $token['regexType'] ?></td>
+                        <td><?= $token['value'] ?></td>
+                        <td><?= $token['error'] ?></td>
+                    </tr>
+                    <?php
+                }
+                ?>
+                </tbody>
+            </table>
+            <?php
+        }
 
 
         /*dd($this->tokensList);
