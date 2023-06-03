@@ -88,6 +88,7 @@ class Compilador {
                     'reservada' => '/^#Mostrar/i',
                     'valor' => '/\((.*)\)/i',
                 ],
+                'validarIdentiString' => true,
             ],
             'read' => [
                 'token' => '/^#Leer/i',
@@ -616,7 +617,8 @@ class Compilador {
                                         }
 
                                         // si tiene valor, veo si necesito validar comillas, si sí, entonces se valida que abran y cierren bien
-                                        if ($this->regexLib->validarComillas($valor) && !$this->regexLib->comillasCorrectas($valor)) {
+                                        $validarBlancos = (!empty($token['validarIdentiString']));
+                                        if ($this->regexLib->validarComillas($valor, $validarBlancos) && !$this->regexLib->comillasCorrectas($valor)) {
                                             $tipoError = 'Sintáctico';
                                             $error = 'Falta una comilla en "'.$lineaCodigo.'", línea '.$noLinea;
                                         }
