@@ -75,6 +75,7 @@ $(document).ready(function () {
             processData: false,
             success: function(response) {
                 resourceCode.val(response).trigger('change'); // disparo el trigger para cambio
+                $(".analisisLexicoBtn").trigger('click');
                 showAlert('Archivo cargado');
             },
             error: function () {
