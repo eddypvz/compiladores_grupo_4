@@ -29,7 +29,7 @@ $(document).ready(function () {
             },
             success: function(response) {
                 $("#analisisCodeTables").html(response); // disparo el trigger para cambio
-                showAlert('Análisis léxico realizado');
+                showAlert('Análisis léxico y sintáctico realizado');
             },
             error: function () {
                 showAlert('Error al realizar análisis, por favor intente de nuevo');

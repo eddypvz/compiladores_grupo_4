@@ -14,17 +14,20 @@ class Compilador {
     // Tokens encontrados
     private $tokensList;
 
+    private $llaveCount;
+
     function __construct($codigo) {
         $this->regexLib = new RegexLib();
         $this->tokensLib = [];
         $this->tokensContador = 0;
         $this->codigo = $codigo;
+        $this->llaveCount = 0;
 
         // Inicio la libtería de tokens
         $this->iniciarLibreriaTokens();
     }
 
-    private function registrarToken($tipo, $subtipo, $token, $regex, $regexType, $noLinea, $valor = '', $error = '') {
+    private function registrarToken($tipo, $subtipo, $token, $regex, $regexType, $noLinea, $valor = '', $error = '', $tipoError = 'léxico') {
 
         $arrTmp = [
             'tipo' => $subtipo,
@@ -34,6 +37,7 @@ class Compilador {
             'line' => $noLinea,
             'value' => $valor,
             'error' => $error,
+            'tipoError' => $tipoError,
         ];
 
         //dd($arrTmp);
@@ -55,7 +59,8 @@ class Compilador {
                     'reservada' => '/^}\s*\r*|\n*Sino\s*\r*|\n*{/',
                 ],*/
 
-        $this->tokensLib['palabrasReservadas'] = [
+        // Léxico
+        $this->tokensLib['lexico']['palabrasReservadas'] = [
             'if' => [
                 'token' => '/^Si/i',
                 'regex' => [
@@ -63,14 +68,17 @@ class Compilador {
                     'valor' => '/\((.*)\)/i',
                 ],
                 'modificador' => 'exigir_opt_logica',
-                'noFinPuntoComa' => true
+                'noFinPuntoComa' => true,
+                'finLlaveOpen' => true,
             ],
             'else' => [
-                'token' => '/^}\s*Sino\s*{/',
+                'token' => '/Sino\s*{/',
                 'regex' => [
-                    'reservada' => '/^}\s*Sino\s*{/',
+                    'reservada' => '/Sino\s*{/',
                 ],
-                'noFinPuntoComa' => true
+                'noFinPuntoComa' => true,
+                'finLlaveOpen' => true,
+                'startLlaveClose' => true,
             ],
             'print' => [
                 'token' => '/^#Mostrar/i',
@@ -105,50 +113,41 @@ class Compilador {
                     'reservada' => '/^#Pordefecto/i',
                 ],
             ],
-            'braceClose' => [
-                'token' => '/^}$/i',
-                'regex' => [
-                    'reservada' => '/^}$/i',
-                ],
-                'noFinPuntoComa' => true
-            ],
-            'braceOpen' => [
-                'token' => '/^{$/i',
-                'regex' => [
-                    'reservada' => '/^{$/i',
-                ],
-                'noFinPuntoComa' => true
-            ],
             'do' => [
                 'token' => '/^Hacer/',
                 'regex' => [
                     'reservada' => '/^Hacer/',
                 ],
-                'noFinPuntoComa' => true
+                'noFinPuntoComa' => true,
+                'finLlaveOpen' => true,
             ],
             'do_while' => [
                 'token' => '/^}\s*Mientras\s*\(/',
                 'regex' => [
                     'reservada' => '/^}\s*Mientras\s*\(/',
                 ],
+                'startLlaveClose' => true,
             ],
             'while' => [
                 'token' => '/^Mientras\s*/',
                 'regex' => [
                     'reservada' => '/^Mientras\s*/',
                 ],
+                'finLlaveOpen' => true,
             ],
             'class' => [
                 'token' => '/^Clase\s*{?/i',
                 'regex' => [
                     'reservada' => '/^Clase\s*{?/i',
                 ],
+                'finLlaveOpen' => true,
             ],
             'switch' => [
                 'token' => '/^Cambio\s*\(?/i',
                 'regex' => [
                     'reservada' => '/^Cambio\s*\(?/i',
                 ],
+                'finLlaveOpen' => true,
             ],
             'private' => [
                 'token' => '/^Privado:\s*/i',
@@ -185,7 +184,7 @@ class Compilador {
             ],
         ];
 
-        $this->tokensLib['logicos'] = [
+        $this->tokensLib['lexico']['logicos'] = [
             'greater' => [
                 'token' => '/>/i',
                 'regex' => [
@@ -260,7 +259,7 @@ class Compilador {
             ],
         ];
 
-        $this->tokensLib['identificadores'] = [
+        $this->tokensLib['lexico']['identificadores'] = [
             // para con_valor: Que inicie con el identificador del tipo de dato (#Caracter, #Decimal, etc), luego uno o más espacios en blanco (\s), seguido de N letras hasta que encuentre uno o N espacios en blanco seguido de igual. Ejemplo:
             // #Decimal salario = "test";
 
@@ -271,6 +270,7 @@ class Compilador {
                 'regex' => [
                     'con_valor' => '/^#Caracter\s*[a-zA-Z_]+[a-zA-Z_0-9]*\s*=\s*/i',
                     'sin_valor' => '/^#Caracter\s*[a-zA-Z_]+[a-zA-Z_0-9]*\s*/i',
+                    'micro_valor' => '/^#Caracter$/i',
                     'valor' => '/([^"|\'])([^"|\']+)/i',
                 ],
             ],
@@ -279,6 +279,7 @@ class Compilador {
                 'regex' => [
                     'con_valor' => '/^#Decimal\s*[a-zA-Z_]+[a-zA-Z_0-9]*\s*=\s*/i',
                     'sin_valor' => '/^#Decimal\s*[a-zA-Z_]+[a-zA-Z_0-9]*\s*/i',
+                    'micro_valor' => '/^#Decimal$/i',
                     'valor' => '/\s*^[0-9]+.?[0-9]+$/i',
                 ],
             ],
@@ -287,6 +288,7 @@ class Compilador {
                 'regex' => [
                     'con_valor' => '/^#Integral\s*[a-zA-Z_]+[a-zA-Z_0-9]*\s*=\s*/i',
                     'sin_valor' => '/^#Integral\s*[a-zA-Z_]+[a-zA-Z_0-9]*\s*/i',
+                    'micro_valor' => '/^#Integral$/i',
                     'valor' => '/\s*[0-9]*/i',
                 ],
             ],
@@ -295,12 +297,13 @@ class Compilador {
                 'regex' => [
                     'con_valor' => '/^#Decision\s*[a-zA-Z_]+[a-zA-Z_0-9]*\s*=\s*/i',
                     'sin_valor' => '/^#Decision\s*[a-zA-Z_]+[a-zA-Z_0-9]*\s*/i',
+                    'micro_valor' => '/^#Decision$/i',
                     'valor' => '/\s*(verdadero|falso)\s*$/i',
                 ],
             ],
         ];
 
-        $this->tokensLib['asignacion'] = [
+        $this->tokensLib['lexico']['asignacion'] = [
             'asignacion_var' => [
                 'token' => '/\s*^[a-zA-Z_]+[0-9]*\s*=/i',
                 'regex' => [
@@ -309,6 +312,9 @@ class Compilador {
             ],
 
         ];
+
+        // Sintáctico
+
     }
 
     public function lexico() {
@@ -322,6 +328,10 @@ class Compilador {
             $this->evaluarLinea($linea, $noLinea + 1);
         }
 
+        if ($this->llaveCount > 0) {
+            $this->registrarToken('otros', '', '', '', '', 'Desconocido', '', "Falta un cierre de llave", 'Sintáctico');
+        }
+
         //dd($this->tokensList);
 
         $arregloResultados = [
@@ -332,19 +342,26 @@ class Compilador {
         $totalErrors = 0;
         $totalTokens = 0;
 
-        foreach ($this->tokensList as $tipo => $value) {
-            foreach ($value as $keyTmp => $keyValue) {
+        if (!empty($this->tokensList)) {
 
-                if (!empty($keyValue['error'])) {
-                    $totalErrors ++;
-                    $arregloResultados['errors'][$tipo][$keyTmp] = $keyValue;
-                }
-                else {
-                    $totalTokens ++;
-                    $arregloResultados['success'][$tipo][$keyTmp] = $keyValue;
+            foreach ($this->tokensList as $tipo => $value) {
+                foreach ($value as $keyTmp => $keyValue) {
+
+                    if (!empty($keyValue['error'])) {
+                        $totalErrors ++;
+
+                        $arregloResultados['errors'][$tipo][$keyValue['error']] = $keyValue;
+                    }
+                    else {
+                        $totalTokens ++;
+                        $arregloResultados['success'][$tipo][$keyTmp] = $keyValue;
+                    }
                 }
             }
         }
+
+        //dd($arregloResultados);
+
 
         ?>
         <div>
@@ -364,6 +381,7 @@ class Compilador {
                     <td>Regex</td>
                     <td>Subtipo</td>
                     <td>Valor</td>
+                    <td>Tipo Error</td>
                     <td>Error</td>
                 </tr>
                 </thead>
@@ -378,6 +396,7 @@ class Compilador {
                         <td><?= $token['regex'] ?></td>
                         <td><?= $token['regexType'] ?></td>
                         <td><?= $token['value'] ?></td>
+                        <td><?= ucfirst($token['tipoError']) ?></td>
                         <td><?= $token['error'] ?></td>
                     </tr>
                     <?php
@@ -453,258 +472,312 @@ class Compilador {
         // Si la línea está en blanco, no hago nada
         if (empty($lineaCodigo)) return '';
 
+        // valido cierres de llaves
+        if ($lineaCodigo == '}') {
+            $this->llaveCount--;
+            return '';
+        }
+
         // Se recorre la librería de tokens inicial
-        foreach ($this->tokensLib as $tipoToken => $tokenList) {
+        foreach ($this->tokensLib as $tipoValidacion => $validaciones) {
 
-            // si son lógicos, los paso de largo porque los evaluo diferente dentro de una palabra reservada siempre
-            if ($tipoToken === 'logicos') continue;
+            foreach ($validaciones as $tipoToken => $tokenList) {
 
-            // Se recorre la lista de tokens
-            foreach ($tokenList as $subtipo => $token) {
+                // si son lógicos, los paso de largo porque los evaluo diferente dentro de una palabra reservada siempre
+                if ($tipoToken === 'logicos') continue;
 
-                foreach ($token['regex'] as $typeRegex => $regex) {
+                // Se recorre la lista de tokens
+                foreach ($tokenList as $subtipo => $token) {
 
-                    // Si el regex es de tipo valor, lo salto ya que lo evaluo diferente
-                    if ($typeRegex === 'valor') continue;
-                    if ($typeRegex === 'modificador') continue;
+                    foreach ($token['regex'] as $typeRegex => $regex) {
 
-                    //dd($regex);
+                        // Si el regex es de tipo valor, lo salto ya que lo evaluo diferente
+                        if ($typeRegex === 'valor') continue;
+                        if ($typeRegex === 'modificador') continue;
 
-                    // Validación si la linea coincide
-                    $coincidencias = [];
 
-                    $coincide = preg_match($regex, $lineaCodigo, $coincidencias);
+                        //dd($regex);
 
-                    // Si coincide con algo de la librería, lo quito de la cadena para seguir evaluando
-                    if (!empty($coincide)) {
+                        // Validación si la linea coincide
+                        $coincidencias = [];
 
-                        /*dd($coincide);
-                        dd($lineaCodigo);
-                        dd($token);*/
+                        $coincide = preg_match($regex, $lineaCodigo, $coincidencias);
 
-                        $error = '';
-                        $lineaRespuesta = '';
+                        // Si coincide con algo de la librería, lo quito de la cadena para seguir evaluando
+                        if (!empty($coincide)) {
 
-                        // valido ;
-                        if (empty($token['noFinPuntoComa'])) {
-                            $finalizaPuntoComa = preg_match('/;$/', $lineaCodigo);
+                            /*dd($coincide);
+                            dd($lineaCodigo);
+                            dd($token);*/
 
-                            if (!$finalizaPuntoComa) {
-                                $this->registrarToken('otros', '', '', '', '', $noLinea, $lineaCodigo, "Falta punto y coma en línea {$noLinea}");
-                                continue;
+                            $error = '';
+                            $tipoError = '';
+                            $lineaRespuesta = '';
+
+                            // valido ;
+                            if (empty($token['noFinPuntoComa'])) {
+                                $finalizaPuntoComa = preg_match('/;$/', $lineaCodigo);
+
+                                if (!$finalizaPuntoComa) {
+                                    $this->registrarToken('otros', '', '', '', '', $noLinea, $lineaCodigo, "Falta punto y coma en línea {$noLinea}", 'Sintáctico');
+                                }
                             }
-                        }
 
-                        // VALIDACIÓN POR TIPO DE TOKEN
-                        if ($tipoToken === 'palabrasReservadas') {
+                            if (!empty($token['finLlaveOpen'])) {
+                                $finalizaPuntoComa = preg_match('/{$/', $lineaCodigo);
 
-                            $lineaRespuesta = preg_replace($regex, '', $lineaCodigo); // Lo reemplazo con nada
-                            $identificador = '';
-                            $valor = '';
-                            $saltarPorSubError = false;
-
-                            // Si tengo regex de valor, debo buscarlo
-                            if (!empty($token['regex']['valor'])) {
-                                $hasValor = preg_match($token['regex']['valor'], $lineaRespuesta, $valor); // Solo caracteres
-
-                                $valor = $valor[1] ?? ($valor[0] ?? $lineaRespuesta);
-
-                                // Si debería tener valor y no tiene, hay error
-                                if (!$hasValor) {
-                                    $error = 'Sintaxis incorrecta para "'.$identificador.'", línea '.$noLinea;
-                                    $valor = $lineaRespuesta;
+                                if (!$finalizaPuntoComa) {
+                                    $this->registrarToken('otros', '', '', '', '', $noLinea, $lineaCodigo, "Falta apertura de llave, {$noLinea}", 'Sintáctico');
                                 }
                                 else {
-                                    // El contenido de las palabras reservadas puede ser una comparación con operadores lógicos, para ello, la palabra reservada me indica el tipo de operacion (en el modificador si tiene)
-                                    if (!empty($token['modificador'])) {
-
-                                        // Si el token me exige una operación logica
-                                        if ($token['modificador'] === 'exigir_opt_logica') {
-
-                                            $optLogicaDetectada = false;
-                                            foreach ($this->tokensLib['logicos'] as $operadorLogico => $regexLogico) {
-                                                /*dd($operadorLogico);
-                                                dd($regexLogico['token']);
-                                                dd($regexLogico['regex']['valor']);*/
-
-                                                // evaluo el valor logico si existe
-                                                $valorLogico = [];
-                                                preg_match($regexLogico['token'], $valor, $valorLogico); // Solo caracteres
-                                                $valorLogico = $valorLogico[0] ?? false;
-
-                                                // si es un valor lógico, valido su estructura, le caigo encima a las variables para no usar otras
-                                                if (!empty($valorLogico)) {
-
-                                                    foreach ($regexLogico['regex'] as $reg => $regexValue) {
-
-                                                        $evalRegexLogica = [];
-                                                        preg_match($regexValue, $valor, $evalRegexLogica); // Solo caracteres
-                                                        $evalRegexLogica = $evalRegexLogica[0] ?? false;
-
-                                                        if (!empty($evalRegexLogica)) {
-                                                            $optLogicaDetectada = true;
-                                                        }
-                                                    }
-
-                                                    if (!$optLogicaDetectada) {
-                                                        //$optLogicaDetectada = true;
-                                                        $error = 'Operación lógica inválida "'.$valor.'", línea '.$noLinea;
-                                                    }
-
-                                                }
-                                            }
-
-                                            if (!$optLogicaDetectada) {
-                                                $saltarPorSubError = true;
-                                                $this->registrarToken('otros', '', '', '', '', $noLinea, $lineaCodigo, "Expresión desconocida en operación lógica, línea {$noLinea}");
-                                            }
-                                        }
-                                    }
-
-                                    // si tiene valor, veo si necesito validar comillas, si sí, entonces se valida que abran y cierren bien
-                                    if ($this->regexLib->validarComillas($valor) && !$this->regexLib->comillasCorrectas($valor)) {
-                                        $error = 'Falta una comilla en el parámetro de"'.$identificador.'", línea '.$noLinea;
-                                    }
+                                    $this->llaveCount++;
                                 }
                             }
 
-                            // Registro el token
-                            $lineaProcesada = true;
+                            if (!empty($token['startLlaveClose'])) {
+                                $iniciaConLlave = preg_match('/^}/', $lineaCodigo);
 
-                            if (!$saltarPorSubError) {
-                                $this->registrarToken($tipoToken, $subtipo, $identificador, $regex, $typeRegex, $noLinea, $valor, $error);
+                                if ($iniciaConLlave) {
+                                    $this->llaveCount--;
+                                }
                             }
-                        }
-                        else if ($tipoToken === 'identificadores') {
 
-                            $lineaRespuesta = preg_replace($regex, '', $lineaCodigo); // Lo reemplazo con nada
-                            $lineaRespuesta = str_replace(';', '', $lineaRespuesta);
-                            //dd($coincidencias);
+                            // VALIDACIÓN POR TIPO DE TOKEN
+                            if ($tipoToken === 'palabrasReservadas') {
 
-                            $coincidencia = $coincidencias[0] ?? '';
-                            $identificador = '';
-                            $valor = '';
+                                $lineaRespuesta = preg_replace($regex, '', $lineaCodigo); // Lo reemplazo con nada
+                                $identificador = '';
+                                $valor = '';
+                                $saltarPorSubError = false;
 
-                            // busco el token (el identificador)
-                            preg_match($token['token'], $coincidencia, $identificador); // Solo caracteres
-
-                            // Si declaran la variable con valor, tengo que obtener su valor
-                            if ($typeRegex === 'con_valor') {
-
-                                // obtengo el valor del identificador
-                                $hasValor = false;
+                                // Si tengo regex de valor, debo buscarlo
                                 if (!empty($token['regex']['valor'])) {
                                     $hasValor = preg_match($token['regex']['valor'], $lineaRespuesta, $valor); // Solo caracteres
-                                    $valor = $valor[0] ?? '';
+
+                                    $valor = $valor[1] ?? ($valor[0] ?? $lineaRespuesta);
+
+                                    // Si debería tener valor y no tiene, hay error
+                                    if (!$hasValor) {
+                                        $tipoError = 'Léxico';
+                                        $error = 'Sintáxis incorrecta para "'.$valor.'", validar asignación de valores o escritura, línea '.$noLinea;
+                                        $valor = $lineaRespuesta;
+                                    }
+                                    else {
+                                        // El contenido de las palabras reservadas puede ser una comparación con operadores lógicos, para ello, la palabra reservada me indica el tipo de operacion (en el modificador si tiene)
+                                        if (!empty($token['modificador'])) {
+
+                                            // Si el token me exige una operación logica
+                                            if ($token['modificador'] === 'exigir_opt_logica') {
+
+                                                $optLogicaDetectada = false;
+                                                foreach ($validaciones['logicos'] as $operadorLogico => $regexLogico) {
+                                                    /*dd($operadorLogico);
+                                                    dd($regexLogico['token']);
+                                                    dd($regexLogico['regex']['valor']);*/
+
+                                                    // evaluo el valor logico si existe
+                                                    $valorLogico = [];
+                                                    preg_match($regexLogico['token'], $valor, $valorLogico); // Solo caracteres
+                                                    $valorLogico = $valorLogico[0] ?? false;
+
+                                                    // si es un valor lógico, valido su estructura, le caigo encima a las variables para no usar otras
+                                                    if (!empty($valorLogico)) {
+
+                                                        foreach ($regexLogico['regex'] as $reg => $regexValue) {
+
+                                                            $evalRegexLogica = [];
+                                                            preg_match($regexValue, $valor, $evalRegexLogica); // Solo caracteres
+                                                            $evalRegexLogica = $evalRegexLogica[0] ?? false;
+
+                                                            if (!empty($evalRegexLogica)) {
+                                                                $optLogicaDetectada = true;
+                                                            }
+                                                        }
+
+                                                        if (!$optLogicaDetectada) {
+                                                            //$optLogicaDetectada = true;
+                                                            $error = 'Operación lógica inválida "'.$valor.'", línea '.$noLinea;
+                                                        }
+
+                                                    }
+                                                }
+
+                                                if (!$optLogicaDetectada) {
+                                                    $saltarPorSubError = true;
+                                                    $this->registrarToken('otros', '', '', '', '', $noLinea, $lineaCodigo, "Expresión desconocida en operación lógica, línea {$noLinea}");
+                                                }
+                                            }
+                                        }
+
+                                        // si tiene valor, veo si necesito validar comillas, si sí, entonces se valida que abran y cierren bien
+                                        if ($this->regexLib->validarComillas($valor) && !$this->regexLib->comillasCorrectas($valor)) {
+                                            $tipoError = 'Sintáctico';
+                                            $error = 'Falta una comilla en el parámetro de"'.$identificador.'", línea '.$noLinea;
+                                        }
+                                    }
                                 }
 
-                                // Si debería tener valor y no tiene, hay error
-                                if (!$hasValor && empty($valor)) {
-                                    $error = "Declaración de variable con tipo de dato o valor incorrecto, línea {$noLinea}";
-                                    $valor = $lineaRespuesta;
+                                // Registro el token
+                                $lineaProcesada = true;
+
+                                if (!$saltarPorSubError) {
+                                    $this->registrarToken($tipoToken, $subtipo, $identificador, $regex, $typeRegex, $noLinea, $valor, $error, $tipoError);
                                 }
                             }
+                            else if ($tipoToken === 'identificadores') {
 
-                            $identificador = $identificador[0] ?? '';
+                                $lineaRespuesta = preg_replace($regex, '', $lineaCodigo); // Lo reemplazo con nada
+                                $lineaRespuesta = str_replace(';', '', $lineaRespuesta);
+                                //dd($coincidencias);
 
-                            $identificador = str_replace(' ', '', $identificador);  // Reemplazo espacios en blanco e iguales, acá sé que llevará un igual ya que lo detecto un typeRegex con valor
-                            $identificador = str_replace('=', '', $identificador);
-                            $identificador = trim($identificador); // elimino espacios en blanco
+                                $coincidencia = $coincidencias[0] ?? '';
+                                $identificador = '';
+                                $valor = '';
 
-                            // Registro el token
-                            $lineaProcesada = true;
-                            $this->registrarToken($tipoToken, $subtipo, $identificador, $regex, $typeRegex, $noLinea, $valor, $error);
-                        }
-                        else if ($tipoToken === 'asignacion') {
-                            $lineaRespuesta = preg_replace($regex, '', $lineaCodigo); // Lo reemplazo con nada
-                            $lineaRespuesta = str_replace(';', '', $lineaRespuesta);
+                                // busco el token (el identificador)
+                                preg_match($token['token'], $coincidencia, $identificador); // Solo caracteres
 
-                            $coincidencia = $coincidencias[0] ?? '';
-                            $identificador = '';
-                            $valor = '';
+                                // valido el identificador por el tema de espacios
+                                $coincidencia = trim($coincidencia);
+                                $coincidenciaBySpace = explode(' ', $coincidencia, 2);
+                                $coincidenciaBySpace = $coincidenciaBySpace[0] ?? false;
 
-                            // busco el token (el identificador)
-                            preg_match($token['token'], $coincidencia, $identificador); // Solo caracteres
-                            $identificador = $identificador[0] ?? '';
+                                if ($coincidenciaBySpace) {
+                                    if (!empty($token['regex']['micro_valor'])) {
+                                        $hasMicroValor = preg_match($token['regex']['micro_valor'], $coincidenciaBySpace, $microValor); // Solo caracteres
+                                        $microValor = $microValor[0] ?? '';
 
-                            // Si es una asignación de variable
-                            if (!empty($identificador)) {
-
-                                $lineaRespuesta = trim($lineaRespuesta);
-
-                                $arrOperaciones = [];
-                                $caracteres = str_split($lineaRespuesta);
-
-                                $parentesis = 0;
-                                $parentesisAbre = 0;
-                                $parentesisCierra = 0;
-                                foreach ($caracteres as $key => $caracter) {
-                                    if ($caracter === ' ') {
-                                        $parentesis++;
-                                        continue;
+                                        if (!$hasMicroValor) {
+                                            $error = "Identificador desconocido, línea {$noLinea}";
+                                            $valor = $lineaRespuesta;
+                                        }
                                     }
-
-                                    if ($caracter === '+' || $caracter === '-' || $caracter === '*' || $caracter === '/' || $caracter === '%' || $caracter === '=') {
-                                        $parentesis++;
-                                        continue;
-                                    }
-
-                                    if ($caracter === '(') {
-                                        $parentesis++;
-                                        $parentesisAbre++;
-                                        continue;
-                                    }
-
-                                    if ($caracter === ')') {
-                                        $parentesis++;
-                                        $parentesisCierra++;
-                                        continue;
-                                    }
-
-                                    // Inicio la posición para que no de error la primera vez
-                                    if (!isset($arrOperaciones[$parentesis])) {
-                                        $arrOperaciones[$parentesis] = '';
-                                    }
-
-                                    $arrOperaciones[$parentesis] .= $caracter;
+                                }
+                                else {
+                                    $error = "Identificador encontrado con declaración extraña, línea {$noLinea}";
+                                    $valor = $lineaRespuesta;
                                 }
 
-                                if ($parentesisAbre !== $parentesisCierra) {
-                                    if (!empty($token['regex']['modificador']) && $token['regex']['modificador'] === 'sin_valor') {
-                                        continue;
+                                // Si declaran la variable con valor, tengo que obtener su valor
+                                if ($typeRegex === 'con_valor') {
+
+                                    // obtengo el valor del identificador
+                                    $hasValor = false;
+                                    if (!empty($token['regex']['valor'])) {
+                                        $hasValor = preg_match($token['regex']['valor'], $lineaRespuesta, $valor); // Solo caracteres
+                                        $valor = $valor[0] ?? '';
                                     }
-                                    $error = "Paréntesis faltante, línea {$noLinea}";
+
+                                    // Si debería tener valor y no tiene, hay error
+                                    if (!$hasValor && empty($valor)) {
+                                        $error = "Declaración de variable con tipo de dato o valor incorrecto, línea {$noLinea}";
+                                        $valor = $lineaRespuesta;
+                                    }
                                 }
 
-                                //dd($token);
-                                foreach ($arrOperaciones as $valor) {
+                                $identificador = $identificador[0] ?? '';
 
-                                    $valor = trim($valor);
+                                $identificador = str_replace(' ', '', $identificador);  // Reemplazo espacios en blanco e iguales, acá sé que llevará un igual ya que lo detecto un typeRegex con valor
+                                $identificador = str_replace('=', '', $identificador);
+                                $identificador = trim($identificador); // elimino espacios en blanco
 
-                                    // Si es un identificador
-                                    $tmpVal = [];
-                                    $isIdenti = preg_match('/\s*^[a-zA-Z_]+[0-9]*/i', $valor, $tmpVal); // Solo caracteres
+                                // Registro el token
+                                $lineaProcesada = true;
+                                $this->registrarToken($tipoToken, $subtipo, $identificador, $regex, $typeRegex, $noLinea, $valor, $error);
+                            }
+                            else if ($tipoToken === 'asignacion') {
+                                $lineaRespuesta = preg_replace($regex, '', $lineaCodigo); // Lo reemplazo con nada
+                                $lineaRespuesta = str_replace(';', '', $lineaRespuesta);
 
-                                    // validamos si es un float
-                                    $tmpVal = [];
-                                    $isFloat = preg_match('/\s*^[0-9]+.?[0-9]+$/i', $valor, $tmpVal); // Solo caracteres
+                                $coincidencia = $coincidencias[0] ?? '';
+                                $identificador = '';
+                                $valor = '';
 
-                                    $tmpVal = [];
-                                    $isInt = preg_match('/\s*^[0-9]+$/i', $valor, $tmpVal); // Solo caracteres
+                                // busco el token (el identificador)
+                                preg_match($token['token'], $coincidencia, $identificador); // Solo caracteres
+                                $identificador = $identificador[0] ?? '';
 
-                                    if (empty($isIdenti) && empty($isFloat) && empty($isInt)) {
+                                // Si es una asignación de variable
+                                if (!empty($identificador)) {
 
+                                    $lineaRespuesta = trim($lineaRespuesta);
+
+                                    $arrOperaciones = [];
+                                    $caracteres = str_split($lineaRespuesta);
+
+                                    $parentesis = 0;
+                                    $parentesisAbre = 0;
+                                    $parentesisCierra = 0;
+                                    foreach ($caracteres as $key => $caracter) {
+                                        if ($caracter === ' ') {
+                                            $parentesis++;
+                                            continue;
+                                        }
+
+                                        if ($caracter === '+' || $caracter === '-' || $caracter === '*' || $caracter === '/' || $caracter === '%' || $caracter === '=') {
+                                            $parentesis++;
+                                            continue;
+                                        }
+
+                                        if ($caracter === '(') {
+                                            $parentesis++;
+                                            $parentesisAbre++;
+                                            continue;
+                                        }
+
+                                        if ($caracter === ')') {
+                                            $parentesis++;
+                                            $parentesisCierra++;
+                                            continue;
+                                        }
+
+                                        // Inicio la posición para que no de error la primera vez
+                                        if (!isset($arrOperaciones[$parentesis])) {
+                                            $arrOperaciones[$parentesis] = '';
+                                        }
+
+                                        $arrOperaciones[$parentesis] .= $caracter;
+                                    }
+
+                                    if ($parentesisAbre !== $parentesisCierra) {
                                         if (!empty($token['regex']['modificador']) && $token['regex']['modificador'] === 'sin_valor') {
                                             continue;
                                         }
-                                        $error = "Posible identificador o tipo de valor desconocido, línea {$noLinea}";
+                                        $error = "Paréntesis faltante, línea {$noLinea}";
+                                    }
+
+                                    //dd($token);
+                                    foreach ($arrOperaciones as $valor) {
+
+                                        $valor = trim($valor);
+
+                                        // Si es un identificador
+                                        $tmpVal = [];
+                                        $isIdenti = preg_match('/\s*^[a-zA-Z_]+[0-9]*/i', $valor, $tmpVal); // Solo caracteres
+
+                                        // validamos si es un float
+                                        $tmpVal = [];
+                                        $isFloat = preg_match('/\s*^[0-9]+.?[0-9]+$/i', $valor, $tmpVal); // Solo caracteres
+
+                                        $tmpVal = [];
+                                        $isInt = preg_match('/\s*^[0-9]+$/i', $valor, $tmpVal); // Solo caracteres
+
+                                        if (empty($isIdenti) && empty($isFloat) && empty($isInt)) {
+
+                                            if (!empty($token['regex']['modificador']) && $token['regex']['modificador'] === 'sin_valor') {
+                                                continue;
+                                            }
+                                            $error = "Posible identificador o tipo de valor desconocido, línea {$noLinea}";
+                                        }
                                     }
                                 }
-                            }
 
-                            // Registro el token
-                            $lineaProcesada = true;
-                            $this->registrarToken($tipoToken, $subtipo, $identificador, $regex, $typeRegex, $noLinea, $valor, $error);
+                                dd($this->llaveCount);
+
+                                // Registro el token
+                                $lineaProcesada = true;
+                                $this->registrarToken($tipoToken, $subtipo, $identificador, $regex, $typeRegex, $noLinea, $valor, $error);
+                            }
                         }
                     }
                 }
@@ -713,7 +786,7 @@ class Compilador {
 
         // si la linea no se detectó en ningún lugar, la agrego como error
         if (!$lineaProcesada) {
-            $this->registrarToken('otros', '', '', '', '', $noLinea, $lineaCodigo, "Expresión desconocida en línea {$noLinea}");
+            $this->registrarToken('otros', '', '', '', '', $noLinea, $lineaCodigo, "Identificador o posible expresión desconocida en línea {$noLinea}");
         }
 
         return $lineaRespuesta;
