@@ -15,6 +15,7 @@ class Compilador {
     private $tokensList;
 
     private $llaveCount;
+    private $comillaCount;
 
     function __construct($codigo) {
         $this->regexLib = new RegexLib();
@@ -22,6 +23,7 @@ class Compilador {
         $this->tokensContador = 0;
         $this->codigo = $codigo;
         $this->llaveCount = 0;
+        $this->comillaCount = 0;
 
         // Inicio la libtería de tokens
         $this->iniciarLibreriaTokens();
@@ -329,7 +331,11 @@ class Compilador {
         }
 
         if ($this->llaveCount > 0) {
-            $this->registrarToken('otros', '', '', '', '', 'Desconocido', '', "Falta un cierre de llave", 'Sintáctico');
+            $this->registrarToken('otros', '', '', '', '', 'Desconocido', '', "Falta un cierre de llave en el programa", 'Sintáctico');
+        }
+
+        if ($this->comillaCount > 0) {
+            $this->registrarToken('otros', '', '', '', '', 'Desconocido', '', "Falta un cierre de comilla en el programa", 'Sintáctico');
         }
 
         //dd($this->tokensList);
@@ -612,7 +618,7 @@ class Compilador {
                                         // si tiene valor, veo si necesito validar comillas, si sí, entonces se valida que abran y cierren bien
                                         if ($this->regexLib->validarComillas($valor) && !$this->regexLib->comillasCorrectas($valor)) {
                                             $tipoError = 'Sintáctico';
-                                            $error = 'Falta una comilla en el parámetro de"'.$identificador.'", línea '.$noLinea;
+                                            $error = 'Falta una comilla en "'.$lineaCodigo.'", línea '.$noLinea;
                                         }
                                     }
                                 }
@@ -772,7 +778,7 @@ class Compilador {
                                     }
                                 }
 
-                                dd($this->llaveCount);
+                                //dd($this->llaveCount);
 
                                 // Registro el token
                                 $lineaProcesada = true;

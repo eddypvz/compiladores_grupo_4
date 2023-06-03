@@ -5,7 +5,12 @@ class RegexLib {
         $valor = [];
         preg_match("/(^\"|^')/", $cadena, $valor); // Solo caracteres
         $valor = $valor[0] ?? false;
-        return !empty($valor);
+
+        $valorCierre = [];
+        preg_match("/(\"|\')$/", $cadena, $valorCierre); // Solo caracteres
+        $valorCierre = $valorCierre[0] ?? false;
+
+        return !empty($valor) || !empty($valorCierre);
     }
 
     public function comillasCorrectas($cadena) {
