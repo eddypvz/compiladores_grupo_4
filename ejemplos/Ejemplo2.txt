@@ -29,7 +29,7 @@
     }
 
     Hacer {
-        #Mostrar(“Este es un ejemplo”);
+        #Mostrar("Este es un ejemplo");
     } Mientras (x<8);
 
     #Regresar 0;
